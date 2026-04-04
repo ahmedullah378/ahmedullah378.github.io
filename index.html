@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Ahmed Ullah · The Operator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    :root {
+      --gold: #d4a832;
+      --gold-dim: rgba(212,168,50,0.35);
+      --gold-glow: rgba(212,168,50,0.15);
+      --bg: #080b12;
+      --text: #f5e9c8;
+      --text-dim: rgba(255,255,255,0.28);
+      --card-bg: rgba(255,255,255,0.03);
+      --card-border: rgba(255,255,255,0.07);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      position: relative;
+    }
+
+    /* Backgrounds */
+    .bg-grid {
+      position: fixed; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(255,200,80,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,200,80,0.025) 1px, transparent 1px);
+      background-size: 52px 52px;
+    }
+    .bg-glow-top {
+      position: fixed; z-index: 0;
+      width: 700px; height: 400px; border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(210,140,30,0.09) 0%, transparent 70%);
+      top: -120px; left: 50%; transform: translateX(-50%);
+      pointer-events: none;
+    }
+    .bg-glow-bottom {
+      position: fixed; z-index: 0;
+      width: 400px; height: 400px; border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(210,140,30,0.06) 0%, transparent 70%);
+      bottom: -100px; right: -80px;
+      pointer-events: none;
+    }
+
+    /* Card */
+    .card {
+      position: relative; z-index: 2;
+      width: 100%; max-width: 420px;
+      background: rgba(10,13,22,0.88);
+      border: 1px solid rgba(212,168,50,0.13);
+      border-radius: 28px;
+      overflow: hidden;
+      backdrop-filter: blur(20px);
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,0.5),
+        0 40px 80px rgba(0,0,0,0.55),
+        0 0 60px rgba(212,168,50,0.04);
+    }
+    .card::before {
+      content: '';
+      position: absolute; inset: 0; z-index: 0;
+      border-radius: 28px;
+      background: linear-gradient(135deg, rgba(212,168,50,0.07) 0%, transparent 50%, rgba(212,168,50,0.03) 100%);
+      pointer-events: none;
+    }
+    .card-inner {
+      position: relative; z-index: 1;
+      padding: 44px 28px 36px;
+    }
+
+    /* ── LOCKED ── */
+    #view-locked {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .monogram {
+      width: 88px; height: 88px; border-radius: 50%;
+      border: 1.5px solid var(--gold-dim);
+      background: radial-gradient(circle at 35% 35%, #1e1a0e, #0c0a06);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px; font-weight: 700; color: var(--gold);
+      box-shadow: 0 0 40px rgba(212,168,50,0.15), inset 0 1px 0 rgba(212,168,50,0.2);
+      margin-bottom: 20px;
+      animation: fadeDown 0.7s ease both;
+    }
+    .name-main {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 34px; font-weight: 700;
+      color: var(--text); letter-spacing: 0.3px;
+      margin-bottom: 6px; text-align: center;
+      animation: fadeDown 0.7s 0.1s ease both;
+    }
+    .name-alias {
+      font-size: 11px; color: var(--gold);
+      letter-spacing: 4px; text-transform: uppercase;
+      margin-bottom: 28px; text-align: center;
+      animation: fadeDown 0.7s 0.2s ease both;
+    }
+    .divider {
+      width: 60px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+      margin: 0 auto 26px;
+      animation: fadeIn 0.7s 0.3s ease both;
+    }
+    .qr-wrapper { animation: fadeUp 0.7s 0.35s ease both; margin-bottom: 18px; }
+    .qr-frame {
+      display: inline-block; padding: 14px;
+      background: white; border-radius: 18px;
+      cursor: pointer;
+      transition: box-shadow 0.3s, transform 0.3s;
+    }
+    .qr-frame:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 50px rgba(212,168,50,0.28);
+    }
+    .scan-hint {
+      font-size: 11px; color: var(--text-dim);
+      letter-spacing: 2px; text-transform: uppercase;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      margin-bottom: 0;
+      animation: fadeIn 0.7s 0.5s ease both;
+    }
+    .pulse-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--gold);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.5); }
+    }
+
+    /* ── TRANSITION ── */
+    #view-transition {
+      display: none;
+      flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 60px 0; gap: 20px;
+    }
+    .spinner-ring {
+      width: 60px; height: 60px; border-radius: 50%;
+      border: 2px solid transparent;
+      border-top-color: var(--gold);
+      border-right-color: rgba(212,168,50,0.25);
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner-text {
+      font-size: 11px; color: rgba(212,168,50,0.5);
+      letter-spacing: 3px; text-transform: uppercase;
+    }
+
+    /* ── UNLOCKED ── */
+    #view-unlocked { display: none; flex-direction: column; }
+
+    .unlocked-header {
+      display: flex; flex-direction: column;
+      align-items: center; text-align: center;
+      margin-bottom: 30px;
+    }
+    .avatar {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #2a2010, #0e0c07);
+      border: 1.5px solid rgba(212,168,50,0.5);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px; font-weight: 700; color: var(--gold);
+      margin-bottom: 14px;
+      box-shadow: 0 0 30px rgba(212,168,50,0.2);
+      animation: scaleIn 0.55s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    .unlocked-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px; font-weight: 700; color: var(--text);
+      margin-bottom: 4px;
+      animation: fadeDown 0.5s 0.08s ease both;
+    }
+    .unlocked-alias {
+      font-size: 11px; color: var(--gold);
+      letter-spacing: 4px; text-transform: uppercase;
+      animation: fadeDown 0.5s 0.15s ease both;
+    }
+
+    /* Socials */
+    .socials { display: flex; flex-direction: column; gap: 10px; }
+    .social-link {
+      display: flex; align-items: center; gap: 14px;
+      padding: 13px 16px; border-radius: 14px;
+      border: 1px solid var(--card-border);
+      background: var(--card-bg);
+      text-decoration: none;
+      opacity: 0; transform: translateY(20px);
+      transition: border-color 0.25s, background 0.25s, transform 0.25s;
+    }
+    .social-link.revealed {
+      animation: slideUp 0.5s ease forwards;
+    }
+    .social-link:hover {
+      border-color: rgba(212,168,50,0.3);
+      background: rgba(212,168,50,0.07);
+      transform: translateX(6px) !important;
+    }
+    @keyframes slideUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .social-icon {
+      width: 42px; height: 42px; border-radius: 11px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .social-info { flex: 1; min-width: 0; }
+    .social-name { font-size: 13px; font-weight: 500; color: #f0e8d0; margin-bottom: 2px; }
+    .social-handle { font-size: 11px; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .social-arrow { font-size: 20px; color: rgba(212,168,50,0.3); transition: color 0.2s, transform 0.2s; flex-shrink: 0; }
+    .social-link:hover .social-arrow { color: var(--gold); transform: translateX(3px); }
+
+    .footer {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      font-size: 10px; color: rgba(255,255,255,0.15);
+      margin-top: 24px; letter-spacing: 2px; text-transform: uppercase;
+      opacity: 0;
+    }
+    .footer.revealed { animation: fadeIn 0.6s 0.7s ease forwards; }
+    .footer-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); opacity: 0.5; }
+
+    /* Keyframes */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.65); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    /* Desktop */
+    @media (min-width: 640px) {
+      .card-inner { padding: 52px 44px 44px; }
+      .monogram { width: 96px; height: 96px; font-size: 36px; }
+      .name-main { font-size: 38px; }
+      .social-link { padding: 15px 20px; }
+      .social-icon { width: 46px; height: 46px; }
+      .social-name { font-size: 14px; }
+      .social-handle { font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow-top"></div>
+<div class="bg-glow-bottom"></div>
+
+<div class="page">
+  <div class="card">
+    <div class="card-inner">
+
+      <!-- LOCKED (shown when visiting from browser directly) -->
+      <div id="view-locked">
+        <div class="monogram">AU</div>
+        <p class="name-main">Ahmed Ullah</p>
+        <p class="name-alias">The Operator</p>
+        <div class="divider"></div>
+        <div class="qr-wrapper">
+          <div class="qr-frame" id="qrBox" onclick="reveal()">
+            <div id="qrCanvas"></div>
+          </div>
+        </div>
+        <p class="scan-hint"><span class="pulse-dot"></span>Scan to connect</p>
+      </div>
+
+      <!-- TRANSITION -->
+      <div id="view-transition">
+        <div class="spinner-ring"></div>
+        <p class="spinner-text">Unlocking…</p>
+      </div>
+
+      <!-- UNLOCKED -->
+      <div id="view-unlocked">
+        <div class="unlocked-header">
+          <div class="avatar">AU</div>
+          <p class="unlocked-name">Ahmed Ullah</p>
+          <p class="unlocked-alias">The Operator</p>
+        </div>
+        <div class="socials">
+
+          <a class="social-link" href="https://www.facebook.com/Ahmedullah3778" target="_blank" rel="noopener">
+            <div class="social-icon" style="background:#1877F2;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+            </div>
+            <div class="social-info">
+              <p class="social-name">Facebook</p>
+              <p class="social-handle">Ahmedullah3778</p>
+            </div>
+            <span class="social-arrow">›</span>
+          </a>
+
+          <a class="social-link" href="https://wa.me/qr/JFWTTJ4LB4B5G1" target="_blank" rel="noopener">
+            <div class="social-icon" style="background:#25D366;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+            </div>
+            <div class="social-info">
+              <p class="social-name">WhatsApp</p>
+              <p class="social-handle">Tap to chat</p>
+            </div>
+            <span class="social-arrow">›</span>
+          </a>
+
+          <a class="social-link" href="https://www.instagram.com/highlypraised_78?igsh=MTB0M2JnZ3hrOXF4cg==" target="_blank" rel="noopener">
+            <div class="social-icon" style="background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            </div>
+            <div class="social-info">
+              <p class="social-name">Instagram</p>
+              <p class="social-handle">@highlypraised_78</p>
+            </div>
+            <span class="social-arrow">›</span>
+          </a>
+
+          <a class="social-link" href="https://www.tiktok.com/@ahmed_ullah78?_r=1&_t=ZS-95Fdg303DYT" target="_blank" rel="noopener">
+            <div class="social-icon" style="background:#010101; border:1px solid rgba(255,255,255,0.1);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.26 8.26 0 0 0 4.83 1.55V6.79a4.85 4.85 0 0 1-1.06-.1z"/></svg>
+            </div>
+            <div class="social-info">
+              <p class="social-name">TikTok</p>
+              <p class="social-handle">@ahmed_ullah78</p>
+            </div>
+            <span class="social-arrow">›</span>
+          </a>
+
+        </div>
+        <p class="footer" id="footer-badge">
+          <span class="footer-dot"></span>
+          Ahmed Ullah · The Operator
+          <span class="footer-dot"></span>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  // QR Code
+  new QRCode(document.getElementById("qrCanvas"), {
+    text: "https://ahmedullah378.github.io/?from=qr",
+    width: 200, height: 200,
+    colorDark: "#000000", colorLight: "#ffffff",
+    correctLevel: QRCode.CorrectLevel.H
+  });
+
+  // Detect if opened from QR scan via ?from=qr param
+  const params = new URLSearchParams(window.location.search);
+  const isQR = params.get('from') === 'qr';
+
+  if (isQR) {
+    // Skip locked view entirely — animate straight into unlocked
+    document.getElementById('view-locked').style.display = 'none';
+    document.getElementById('view-unlocked').style.display = 'flex';
+    animateSocials(0);
+  }
+
+  function animateSocials(baseDelay) {
+    const links = document.querySelectorAll('.social-link');
+    links.forEach((el, i) => {
+      setTimeout(() => el.classList.add('revealed'), baseDelay + i * 100);
+    });
+    setTimeout(() => {
+      document.getElementById('footer-badge').classList.add('revealed');
+    }, baseDelay + 600);
+  }
+
+  function reveal() {
+    const locked = document.getElementById('view-locked');
+    const transition = document.getElementById('view-transition');
+    const unlocked = document.getElementById('view-unlocked');
+
+    locked.style.transition = 'opacity 0.3s';
+    locked.style.opacity = '0';
+
+    setTimeout(() => {
+      locked.style.display = 'none';
+      transition.style.display = 'flex';
+      setTimeout(() => {
+        transition.style.display = 'none';
+        unlocked.style.display = 'flex';
+        animateSocials(80);
+      }, 1100);
+    }, 300);
+  }
+</script>
+</body>
+</html>
