@@ -7,17 +7,23 @@ jobs:
   scan:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # Critical for saving the PDF
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - name: Install Tools
         run: pip install opencv-python-headless numpy img2pdf requests
-      - name: Run Multi-Page Scan
+      - name: Run Script
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           FILE_URL: ${{ github.event.client_payload.file_url }}
-        run: python scripts/process_photos.py
-      - name: Save to Repo
+        # This checks both the root and your subfolder just in case
+        run: |
+          if [ -f "scripts/process_photos.py" ]; then
+            python scripts/process_photos.py
+          else
+            python email-photo-processor/scripts/process_photos.py
+          fi
+      - name: Save PDF
         run: |
           git config --global user.name "Scanner-Bot"
           git config --global user.email "bot@github.com"
