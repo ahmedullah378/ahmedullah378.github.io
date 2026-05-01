@@ -10,7 +10,7 @@ jobs:
   scan:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write   # Allows saving the PDF to your repo
     steps:
       - uses: actions/checkout@v4
         with:
