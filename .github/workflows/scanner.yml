@@ -11,30 +11,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Install CamScanner Tools
+      - name: Install All Tools
         run: |
           pip install opencv-python-headless numpy img2pdf requests
           
-      - name: Run Processing Script
+      - name: Run Multi-Page Scan
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           FILE_URL: ${{ github.event.client_payload.file_url }}
         run: |
-          # This command searches your whole repo for the script and runs it
-          SCRIPT_PATH=$(find . -name "process_photos.py" | head -n 1)
-          if [ -z "$SCRIPT_PATH" ]; then
-            echo "ERROR: Could not find process_photos.py anywhere in the repo!"
-            exit 1
-          fi
-          echo "Found script at: $SCRIPT_PATH"
-          python "$SCRIPT_PATH"
+          # Finds the script even if it's in a subfolder
+          SCRIPT=$(find . -name "process_photos.py" | head -n 1)
+          python "$SCRIPT"
           
-      - name: Save PDF to Repo
+      - name: Save to Portfolio
         run: |
           git config --global user.name "Scanner-Bot"
           git config --global user.email "bot@github.com"
-          mkdir -p Scans
           git add Scans/
-          git commit -m "Automated Scan Update" || echo "No changes to commit"
+          git commit -m "Automated Multi-page PDF Update" || echo "No changes"
           git push
-          
