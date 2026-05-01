@@ -1,29 +1,24 @@
 import cv2, numpy as np, img2pdf, os, requests
 
 def cleanup(img_bytes):
-    try:
-        nparr = np.frombuffer(img_bytes, np.uint8)
-        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        # Professional-grade whitening filter
-        cleaned = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 11)
-        _, buffer = cv2.imencode(".jpg", cleaned)
-        return buffer.tobytes()
-    except Exception as e:
-        print(f"Error processing image: {e}")
-        return None
+    nparr = np.frombuffer(img_bytes, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if img is None: return None
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    # Professional whitening filter
+    cleaned = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
+                                    cv2.THRESH_BINARY, 11, 11)
+    _, buffer = cv2.imencode(".jpg", cleaned)
+    return buffer.tobytes()
 
-def run():
-    # Get variables from GitHub environment
+def run_automation():
     urls = os.getenv("FILE_URL", "").split(",")
     token = os.getenv("SLACK_BOT_TOKEN")
     pdf_pages = []
 
-    # Create storage folder if missing
-    if not os.path.exists("Scans"): 
+    # Ensure the storage folder exists
+    if not os.path.exists("Scans"):
         os.makedirs("Scans")
-
-    print(f"Starting process for {len(urls)} images...")
 
     for url in urls:
         if not url: continue
@@ -31,16 +26,12 @@ def run():
         if r.status_code == 200:
             processed = cleanup(r.content)
             if processed: pdf_pages.append(processed)
-        else:
-            print(f"Failed to download image. Status: {r.status_code}")
 
     if pdf_pages:
-        output_path = "Scans/scanned_doc.pdf"
+        output_path = "Scans/multi_page_scan.pdf"
         with open(output_path, "wb") as f:
             f.write(img2pdf.convert(pdf_pages))
-        print(f"Success! Created {output_path}")
-    else:
-        print("No pages were processed.")
+        print(f"Success! Created PDF with {len(pdf_pages)} pages.")
 
 if __name__ == "__main__":
-    run()
+    run_automation()
