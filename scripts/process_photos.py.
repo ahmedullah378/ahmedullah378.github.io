@@ -1,22 +1,29 @@
-import cv2, numpy as np, img2pdf, os, requests
+import cv2
+import numpy as np
+import img2pdf
+import os
+import requests
 
 def cam_scanner_cleanup(img_bytes):
-    # Decode the image from memory
     nparr = np.frombuffer(img_bytes, np.uint8)
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    # Professional whitening filter
     cleaned = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
                                     cv2.THRESH_BINARY, 11, 11)
-    # Encode back to jpg to save space
     _, buffer = cv2.imencode(".jpg", cleaned)
     return buffer.tobytes()
 
 def run_automation():
-    # GitHub sends URLs separated by commas
     urls = os.getenv("FILE_URL", "").split(",")
     token = os.getenv("SLACK_BOT_TOKEN")
     cleaned_images = []
 
+    # 1. Create the Scans folder if it's missing
+    if not os.path.exists("Scans"):
+        os.makedirs("Scans")
+
+    # 2. Process each image URL sent from your phone
     for url in urls:
         if not url: continue
         headers = {'Authorization': f'Bearer {token}'}
@@ -24,12 +31,12 @@ def run_automation():
         if r.status_code == 200:
             cleaned_images.append(cam_scanner_cleanup(r.content))
 
+    # 3. Stitch them into ONE PDF
     if cleaned_images:
-        save_path = "Scans/multi_page_doc.pdf"
-        os.makedirs("Scans", exist_ok=True)
-        with open(save_path, "wb") as f:
+        pdf_path = "Scans/latest_document.pdf"
+        with open(pdf_path, "wb") as f:
             f.write(img2pdf.convert(cleaned_images))
-        print(f"Success! {len(cleaned_images)} pages converted.")
+        print(f"Successfully created PDF with {len(cleaned_images)} pages.")
 
 if __name__ == "__main__":
     run_automation()
