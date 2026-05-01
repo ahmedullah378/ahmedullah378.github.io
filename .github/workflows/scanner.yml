@@ -1,8 +1,13 @@
-name: Cloud Scanner
+name: Cloud Scanner (Auto-Archive)
 on:
+  # Wakes up every 10 minutes
+  schedule:
+    - cron: '*/10 * * * *'
+  # Backup manual button for your boss
+  workflow_dispatch:
+  # Backup for Pydroid (if you ever need it)
   repository_dispatch:
     types: [new_photo]
-  workflow_dispatch:
 
 jobs:
   scan:
@@ -12,23 +17,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Important for counting previous files
+          fetch-depth: 0 # Needed to count existing files for serial naming
       
-      - name: Install All Tools
+      - name: Install Libraries
         run: |
           pip install opencv-python-headless numpy img2pdf requests slack_sdk
           
       - name: Run Auto-Processor
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-          FILE_URL: ${{ github.event.client_payload.file_url }}
           CHANNEL_ID: "C0B0LFFAHM5"
         run: python scripts/process_photos.py
           
-      - name: Save to Portfolio
+      - name: Save & Sync Archive
         run: |
           git config --global user.name "Scanner-Bot"
           git config --global user.email "bot@github.com"
+          mkdir -p Scans
           git add Scans/
-          git commit -m "Automated Multi-page PDF Update" || echo "No changes"
+          git commit -m "Automated Document Archive Update" || echo "No changes"
           git push
