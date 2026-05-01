@@ -1,0 +1,47 @@
+import os
+import requests
+from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
+
+# Your Credentials (Set these in your GitHub Secrets)
+SLACK_TOKEN = os.environ.get("SLACK_BOT_TOKEN")
+GITHUB_TOKEN = os.environ.get("GH_PAT") # You will need to add this secret
+REPO_OWNER = "ahmedullah378"
+REPO_NAME = "ahmedullah378.github.io"
+
+client = WebClient(token=SLACK_TOKEN)
+
+def trigger_github_action(file_data):
+    """Sends a signal to GitHub to start the CamScanner process."""
+    url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/dispatches"
+    headers = {
+        "Authorization": f"token {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+    payload = {
+        "event_type": "process_image",
+        "client_payload": {
+            "file_url": file_data['url_private'],
+            "channel": file_data['shares']['public'].keys() if 'shares' in file_data else "general",
+            "sender": file_data['user']
+        }
+    }
+    requests.post(url, json=payload, headers=headers)
+
+# Logic to listen for new files in #pdf-cleaner
+def monitor_slack():
+    try:
+        # This checks the last few messages for a file
+        result = client.conversations_history(channel="C0B1ERPAVGR") # Your channel ID from the screenshot
+        for message in result["messages"]:
+            if "files" in message:
+                for file in message["files"]:
+                    print(f"Found file: {file['name']}. Triggering GitHub...")
+                    trigger_github_action(file)
+                    return # Only process the latest one
+    except SlackApiError as e:
+        print(f"Error: {e}")
+
+if __name__ == "__main__":
+    monitor_slack()
+  
