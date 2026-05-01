@@ -5,8 +5,10 @@ def cleanup(img_bytes):
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
     if img is None: return None
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    # Double resolution for crisp text
     gray = cv2.resize(gray, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
     denoised = cv2.medianBlur(gray, 3)
+    # Professional Gaussian Thresholding
     processed = cv2.adaptiveThreshold(denoised, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 15, 12)
     _, buffer = cv2.imencode(".jpg", processed, [cv2.IMWRITE_JPEG_QUALITY, 95])
     return buffer.tobytes()
@@ -42,7 +44,7 @@ def run():
         path = f"Scans/{name}"
         with open(path, "wb") as f:
             f.write(img2pdf.convert(pdf_pages))
-        client.files_upload_v2(channel=channel_id, file=path, title=name, initial_comment=f"✅ **{name}** ready (Sharpness++)\n📄 Pages: {len(pdf_pages)}")
+        client.files_upload_v2(channel=channel_id, file=path, title=name, initial_comment=f"✅ **{name}** ready!\n📄 Pages: {len(pdf_pages)}")
         try:
             client.reactions_add(channel=channel_id, name="white_check_mark", timestamp=target_msg["ts"])
         except Exception: pass
