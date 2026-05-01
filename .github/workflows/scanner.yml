@@ -23,7 +23,7 @@ jobs:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           FILE_URL: ${{ github.event.client_payload.file_url }}
           USER_NAME: ${{ github.event.client_payload.sender }}
-        run: python scripts/process_photos.py
+        run: python email-photo-processor/scripts/process_photos.py
 
       - name: Save PDF to Repo
         run: |
