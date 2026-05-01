@@ -6,29 +6,21 @@ on:
 jobs:
   scan:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Critical for saving the PDF
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-
-      - name: Install Libraries
-        run: |
-          pip install opencv-python-headless numpy img2pdf requests
-          
-      - name: Run Cleanup
+      - name: Install Tools
+        run: pip install opencv-python-headless numpy img2pdf requests
+      - name: Run Multi-Page Scan
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           FILE_URL: ${{ github.event.client_payload.file_url }}
-          USER_NAME: ${{ github.event.client_payload.sender }}
-        run: python email-photo-processor/scripts/process_photos.py
-
-      - name: Save PDF to Repo
+        run: python scripts/process_photos.py
+      - name: Save to Repo
         run: |
           git config --global user.name "Scanner-Bot"
           git config --global user.email "bot@github.com"
           git add Scans/
-          git commit -m "New document processed" || echo "No changes to commit"
+          git commit -m "Added multi-page PDF" || echo "No changes"
           git push
