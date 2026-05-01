@@ -1,5 +1,6 @@
 import cv2, numpy as np, img2pdf, os, requests
 from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
 
 def cleanup(img_bytes):
     nparr = np.frombuffer(img_bytes, np.uint8)
@@ -29,7 +30,7 @@ def run():
                 break
     
     if not target_msg:
-        print("No new documents to process.")
+        print("No new documents found.")
         return
 
     urls = [f['url_private'] for f in target_msg['files'] if f['mimetype'].startswith('image/')]
@@ -52,7 +53,7 @@ def run():
         with open(file_path, "wb") as f:
             f.write(img2pdf.convert(pdf_pages))
         
-        # This is where the spacing error was—now fixed!
+        # Upload PDF
         client.files_upload_v2(
             channel=channel_id,
             file=file_path,
@@ -60,11 +61,15 @@ def run():
             initial_comment=f"✅ **{file_name}** is ready!\n📄 Total Pages: **{len(pdf_pages)}**"
         )
 
-        client.reactions_add(
-            channel=channel_id,
-            name="white_check_mark",
-            timestamp=target_msg["ts"]
-        )
+        # Try to add reaction, but don't crash if it fails
+        try:
+            client.reactions_add(
+                channel=channel_id,
+                name="white_check_mark",
+                timestamp=target_msg["ts"]
+            )
+        except SlackApiError as e:
+            print(f"Reaction failed (check permissions): {e.response['error']}")
 
 if __name__ == "__main__":
     run()
