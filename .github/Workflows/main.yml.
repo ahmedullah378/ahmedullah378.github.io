@@ -1,0 +1,34 @@
+name: Auto-Doc Processor
+on:
+  repository_dispatch:
+    types: [process_image]
+
+jobs:
+  process:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python & Dependencies
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - run: pip install opencv-python-headless numpy img2pdf requests
+
+      - name: Execute Scan Logic
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          FILE_URL: ${{ github.event.client_payload.file_url }}
+          CHANNEL_NAME: ${{ github.event.client_payload.channel }}
+          USER_NAME: ${{ github.event.client_payload.sender }}
+        run: python scripts/process_photos.py
+
+      - name: Commit PDF to Repo
+        run: |
+          git config --global user.name "Automation Bot"
+          git config --global user.email "bot@github.com"
+          git add processed_docs/
+          git commit -m "Added new processed document"
+          git push
+          
