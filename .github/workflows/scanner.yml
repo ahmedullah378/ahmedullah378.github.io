@@ -20,17 +20,21 @@ jobs:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           FILE_URL: ${{ github.event.client_payload.file_url }}
         run: |
-          # This checks both possible locations for your script
-          if [ -f "scripts/process_photos.py" ]; then
-            python scripts/process_photos.py
-          else
-            python email-photo-processor/scripts/process_photos.py
+          # This command searches your whole repo for the script and runs it
+          SCRIPT_PATH=$(find . -name "process_photos.py" | head -n 1)
+          if [ -z "$SCRIPT_PATH" ]; then
+            echo "ERROR: Could not find process_photos.py anywhere in the repo!"
+            exit 1
           fi
+          echo "Found script at: $SCRIPT_PATH"
+          python "$SCRIPT_PATH"
           
-      - name: Save to Repository
+      - name: Save PDF to Repo
         run: |
           git config --global user.name "Scanner-Bot"
           git config --global user.email "bot@github.com"
+          mkdir -p Scans
           git add Scans/
-          git commit -m "Updated scanned PDF" || echo "No changes to commit"
+          git commit -m "Automated Scan Update" || echo "No changes to commit"
           git push
+          
