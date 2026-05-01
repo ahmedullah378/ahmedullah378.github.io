@@ -1,11 +1,8 @@
-name: Cloud Scanner (Auto-Archive)
+name: Cloud Scanner (Fast Archive)
 on:
-  # Wakes up every 10 minutes
   schedule:
-    - cron: '*/10 * * * *'
-  # Backup manual button for your boss
+    - cron: '*/5 * * * *' # Wakes up every 5 minutes
   workflow_dispatch:
-  # Backup for Pydroid (if you ever need it)
   repository_dispatch:
     types: [new_photo]
 
@@ -17,11 +14,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Needed to count existing files for serial naming
+          fetch-depth: 0
       
       - name: Install Libraries
-        run: |
-          pip install opencv-python-headless numpy img2pdf requests slack_sdk
+        run: pip install opencv-python-headless numpy img2pdf requests slack_sdk
           
       - name: Run Auto-Processor
         env:
