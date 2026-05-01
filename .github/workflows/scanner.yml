@@ -2,6 +2,7 @@ name: Cloud Scanner
 on:
   repository_dispatch:
     types: [new_photo]
+  workflow_dispatch:
 
 jobs:
   scan:
@@ -10,23 +11,24 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Important for counting previous files
       
       - name: Install All Tools
         run: |
-          pip install opencv-python-headless numpy img2pdf requests
+          pip install opencv-python-headless numpy img2pdf requests slack_sdk
           
-      - name: Run Multi-Page Scan
+      - name: Run Auto-Processor
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           FILE_URL: ${{ github.event.client_payload.file_url }}
-        # Directly pointing to the file in your scripts folder
+          CHANNEL_ID: "C0B0LFFAHM5"
         run: python scripts/process_photos.py
           
       - name: Save to Portfolio
         run: |
           git config --global user.name "Scanner-Bot"
           git config --global user.email "bot@github.com"
-          mkdir -p Scans
           git add Scans/
           git commit -m "Automated Multi-page PDF Update" || echo "No changes"
           git push
