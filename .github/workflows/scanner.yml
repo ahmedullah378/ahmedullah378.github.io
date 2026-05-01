@@ -1,0 +1,27 @@
+name: Cloud Scanner
+on:
+  repository_dispatch:
+    types: [new_photo]
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Environment
+        run: |
+          pip install opencv-python-headless numpy img2pdf requests
+      - name: Run Cleanup
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          FILE_URL: ${{ github.event.client_payload.file_url }}
+          USER_NAME: ${{ github.event.client_payload.sender }}
+        run: python scripts/process_photos.py
+      - name: Save to Repository
+        run: |
+          git config --global user.name "Scanner-Bot"
+          git config --global user.email "bot@github.com"
+          git add Scans/
+          git commit -m "Auto-scan: New document added"
+          git push
+          
