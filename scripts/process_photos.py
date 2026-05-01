@@ -6,7 +6,6 @@ def cleanup(img_bytes):
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
     if img is None: return None
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    # High-contrast professional document filter
     cleaned = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
                                     cv2.THRESH_BINARY, 11, 11)
     _, buffer = cv2.imencode(".jpg", cleaned)
@@ -17,20 +16,26 @@ def run():
     channel_id = os.getenv("CHANNEL_ID")
     client = WebClient(token=token)
     
-    # 1. Fetch latest Slack messages
+    # Fetch the last few messages
     response = client.conversations_history(channel=channel_id, limit=5)
     messages = response.get("messages", [])
     
-    # Find the latest message that HAS files and is NOT from a bot
-    target_msg = next((m for m in messages if "files" in m and "bot_id" not in m), None)
+    # Find latest message with files that isn't from a bot and doesn't have a "processed" reaction
+    target_msg = None
+    for m in messages:
+        if "files" in m and "bot_id" not in m:
+            # Check if we already reacted with a checkmark to this message
+            has_check = any(r['name'] == 'white_check_mark' for r in m.get('reactions', []))
+            if not has_check:
+                target_msg = m
+                break
     
     if not target_msg:
-        print("No new user-uploaded documents found. Skipping run.")
+        print("No new documents to process.")
         return
 
     urls = [f['url_private'] for f in target_msg['files'] if f['mimetype'].startswith('image/')]
     
-    # 2. Process Images
     pdf_pages = []
     session = requests.Session()
     session.headers.update({'Authorization': f'Bearer {token}'})
@@ -40,25 +45,29 @@ def run():
             processed = cleanup(r.content)
             if processed: pdf_pages.append(processed)
 
-    # 3. Create Unique Serial Name
-    os.makedirs("Scans", exist_ok=True)
-    count = len([f for f in os.listdir("Scans") if f.endswith('.pdf')]) + 1
-    file_name = f"Document_{count:03d}.pdf"
-    file_path = f"Scans/{file_name}"
-
     if pdf_pages:
-        # Save locally in GitHub runner
+        os.makedirs("Scans", exist_ok=True)
+        count = len([f for f in os.listdir("Scans") if f.endswith('.pdf')]) + 1
+        file_name = f"Document_{count:03d}.pdf"
+        file_path = f"Scans/{file_name}"
+
         with open(file_path, "wb") as f:
             f.write(img2pdf.convert(pdf_pages))
         
-        # 4. Post back to Slack for the boss
+        # Upload back to Slack
         client.files_upload_v2(
             channel=channel_id,
             file=file_path,
             title=file_name,
-            initial_comment=f"✅ Document Processed: *{file_name}*"
+            initial_comment=f"✅ Document {count:03d} is ready!"
         )
-        print(f"Success! Archived {file_name}")
+
+        # IMPORTANT: Add a reaction so we don't process this message again in 5 minutes
+        client.reactions_add(
+            channel=channel_id,
+            name="white_check_mark",
+            timestamp=target_msg["ts"]
+        )
 
 if __name__ == "__main__":
     run()
