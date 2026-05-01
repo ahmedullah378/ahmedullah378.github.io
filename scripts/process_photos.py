@@ -3,13 +3,34 @@ from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
 def cleanup(img_bytes):
+    # Load image from bytes
     nparr = np.frombuffer(img_bytes, np.uint8)
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
     if img is None: return None
+
+    # 1. Convert to Grayscale
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    cleaned = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
-                                    cv2.THRESH_BINARY, 11, 11)
-    _, buffer = cv2.imencode(".jpg", cleaned)
+
+    # 2. Rescale for better OCR/Readability (DPI increase)
+    # This doubles the resolution to help sharpen tiny text
+    gray = cv2.resize(gray, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+
+    # 3. Denoising (Removes the 'grainy' look from phone cameras)
+    denoised = cv2.medianBlur(gray, 3)
+
+    # 4. Advanced Thresholding (Gaussian gives smoother edges than Mean)
+    # This creates a crisp black-and-white look
+    processed = cv2.adaptiveThreshold(
+        denoised, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
+        cv2.THRESH_BINARY, 15, 12
+    )
+
+    # 5. Sharpening the 'Ink'
+    # This makes the letters slightly bolder and easier to see
+    kernel = np.ones((1, 1), np.uint8)
+    processed = cv2.morphologyEx(processed, cv2.MORPH_OPEN, kernel)
+
+    _, buffer = cv2.imencode(".jpg", processed, [cv2.IMWRITE_JPEG_QUALITY, 95])
     return buffer.tobytes()
 
 def run():
@@ -53,16 +74,20 @@ def run():
         with open(file_path, "wb") as f:
             f.write(img2pdf.convert(pdf_pages))
         
-        # Upload PDF
         client.files_upload_v2(
             channel=channel_id,
             file=file_path,
             title=file_name,
-            initial_comment=f"✅ **{file_name}** is ready!\n📄 Total Pages: **{len(pdf_pages)}**"
+            initial_comment=f"✅ **{file_name}** Sharpness Enhanced!\n📄 Total Pages: **{len(pdf_pages)}**"
         )
 
-        # Try to add reaction, but don't crash if it fails
         try:
+            client.reactions_add(channel=channel_id, name="white_check_mark", timestamp=target_msg["ts"])
+        except SlackApiError:
+            pass
+
+if __name__ == "__main__":
+    run()
             client.reactions_add(
                 channel=channel_id,
                 name="white_check_mark",
