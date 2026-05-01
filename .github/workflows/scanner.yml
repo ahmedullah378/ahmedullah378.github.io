@@ -1,8 +1,8 @@
-name: Cloud Scanner (5-Min Auto)
+name: Cloud Scanner
 on:
   schedule:
-    - cron: '*/5 * * * *' # Fast as GitHub allows
-  workflow_dispatch:
+    - cron: '*/5 * * * *'
+  workflow_dispatch: # This creates the "Run workflow" button
   repository_dispatch:
     types: [new_photo]
 
@@ -10,26 +10,32 @@ jobs:
   scan:
     runs-on: ubuntu-latest
     permissions:
-      contents: write   # Allows saving the PDF to your repo
+      contents: write
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       
-      - name: Install Libraries
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      - name: Install Tools
         run: pip install opencv-python-headless numpy img2pdf requests slack_sdk
           
-      - name: Run Auto-Processor
+      - name: Run Processing Script
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           CHANNEL_ID: "C0B0LFFAHM5"
         run: python scripts/process_photos.py
           
-      - name: Save & Sync Archive
+      - name: Commit and Push PDF
         run: |
           git config --global user.name "Scanner-Bot"
           git config --global user.email "bot@github.com"
           mkdir -p Scans
           git add Scans/
-          git commit -m "Automated Sync - Document Archive" || echo "No changes"
+          git commit -m "Automated Scan Update" || echo "No changes"
           git push
