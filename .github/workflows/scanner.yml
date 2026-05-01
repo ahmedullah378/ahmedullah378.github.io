@@ -10,23 +10,27 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Install Tools
-        run: pip install opencv-python-headless numpy img2pdf requests
-      - name: Run Script
+      
+      - name: Install CamScanner Tools
+        run: |
+          pip install opencv-python-headless numpy img2pdf requests
+          
+      - name: Run Processing Script
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           FILE_URL: ${{ github.event.client_payload.file_url }}
-        # This checks both the root and your subfolder just in case
         run: |
+          # This checks both possible locations for your script
           if [ -f "scripts/process_photos.py" ]; then
             python scripts/process_photos.py
           else
             python email-photo-processor/scripts/process_photos.py
           fi
-      - name: Save PDF
+          
+      - name: Save to Repository
         run: |
           git config --global user.name "Scanner-Bot"
           git config --global user.email "bot@github.com"
           git add Scans/
-          git commit -m "Added multi-page PDF" || echo "No changes"
+          git commit -m "Updated scanned PDF" || echo "No changes to commit"
           git push
