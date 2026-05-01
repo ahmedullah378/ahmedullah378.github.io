@@ -19,15 +19,14 @@ jobs:
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           FILE_URL: ${{ github.event.client_payload.file_url }}
-        run: |
-          # Finds the script even if it's in a subfolder
-          SCRIPT=$(find . -name "process_photos.py" | head -n 1)
-          python "$SCRIPT"
+        # Directly pointing to the file in your scripts folder
+        run: python scripts/process_photos.py
           
       - name: Save to Portfolio
         run: |
           git config --global user.name "Scanner-Bot"
           git config --global user.email "bot@github.com"
+          mkdir -p Scans
           git add Scans/
           git commit -m "Automated Multi-page PDF Update" || echo "No changes"
           git push
