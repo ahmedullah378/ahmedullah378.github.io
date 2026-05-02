@@ -82,9 +82,7 @@
             text-transform: uppercase; margin-bottom: 15px; opacity: 0.9;
         }
 
-        p { font-size: 0.88rem; line-height: 1.5; color: rgba(255,255,255,0.8); }
-
-        .game-list { display: flex; flex-direction: column; gap: 12px; margin-top: 5px; }
+        .game-list { display: flex; flex-direction: column; gap: 12px; }
 
         .game-item {
             display: flex; align-items: center; gap: 15px;
@@ -93,14 +91,12 @@
             border: 1px solid rgba(255,255,255,0.05);
         }
 
-        .game-thumb { width: 50px; height: 50px; border-radius: 12px; object-fit: cover; }
-
-        .skill-pill {
-            background: rgba(212, 175, 55, 0.08);
-            border: 1px solid rgba(212, 175, 55, 0.15);
-            padding: 6px 14px; border-radius: 12px;
-            font-size: 0.72rem; color: var(--ios-gold-bright); font-weight: 500;
-            margin: 4px; display: inline-block;
+        .game-thumb { 
+            width: 55px; 
+            height: 55px; 
+            border-radius: 14px; 
+            object-fit: cover;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
         .link-item {
@@ -115,7 +111,6 @@
         }
 
         .link-item:hover { background: rgba(255,255,255,0.08); transform: translateY(-2px); }
-        .wa-link { color: #34C759; }
     </style>
 </head>
 <body>
@@ -128,30 +123,25 @@
         <h1>Ahmed Ullah</h1>
         <span class="operator-tag">The Operator</span>
 
-        <div class="section-header">Latest Project</div>
+        <div class="section-header">Recent Project</div>
         <div class="glass-card">
             <span style="font-weight: 600; color: #fff; display: block; margin-bottom: 8px;">Hub-and-Spoke Automation</span>
-            <p>Developed a sophisticated Python pipeline connecting Slack and GitHub to automate document processing, image uploads, and repository synchronization for streamlined workflows.</p>
-        </div>
-
-        <div class="section-header">About</div>
-        <div class="glass-card">
-            <p>Technical specialist and hardware enthusiast based in Dhaka. Specialized in software troubleshooting, workflow automation, and high-performance digital environments.</p>
+            <p style="font-size: 0.88rem; line-height: 1.5; color: rgba(255,255,255,0.8); margin: 0;">Developed a custom Python tool to monitor Slack channels for document images and automate synchronization with GitHub repositories for one-click processing.</p>
         </div>
 
         <div class="section-header">Gaming Hobbies</div>
         <div class="glass-card">
             <div class="game-list">
                 <div class="game-item">
-                    <img src="https://m.media-amazon.com/images/I/41-q0N8u5aL.png" alt="PUBG" class="game-thumb">
+                    <img src="https://m.media-amazon.com/images/I/41-q0N8u5aL.png" class="game-thumb" alt="PUBG" onerror="this.src='https://placehold.co/100x100/111/D4AF37?text=PUBG'">
                     <span class="game-name">PUBG Mobile</span>
                 </div>
                 <div class="game-item">
-                    <img src="https://styles.redditmedia.com/t5_3oeyf/styles/communityIcon_v685t6x595p11.png" alt="Fortnite" class="game-thumb">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR61eWvK_6qH1G7fR9k6FzR0fS-H0qG5_X8_A&s" class="game-thumb" alt="Fortnite" onerror="this.src='https://placehold.co/100x100/111/D4AF37?text=FN'">
                     <span class="game-name">Fortnite Mobile</span>
                 </div>
                 <div class="game-item">
-                    <img src="https://play-lh.googleusercontent.com/I2vWp_oX7rLdEa5_N3X6yF3R5Y" alt="Blood Strike" class="game-thumb">
+                    <img src="https://static.wikia.nocookie.net/bloodstrike/images/f/f6/Bloodstrike_icon.png" class="game-thumb" alt="Blood Strike" onerror="this.src='https://placehold.co/100x100/111/D4AF37?text=BS'">
                     <span class="game-name">Blood Strike</span>
                 </div>
             </div>
@@ -159,7 +149,7 @@
 
         <div class="section-header">Education</div>
         <div class="glass-card">
-            <div style="margin-bottom: 15px;">
+            <div style="margin-bottom: 12px;">
                 <span style="font-weight: 600;">Diploma in Computer Science & Engineering</span><br>
                 <span style="font-size: 0.75rem; color: var(--ios-gold);">Currently Pursuing</span>
             </div>
@@ -167,15 +157,6 @@
                 <span style="font-weight: 600;">Motijheel Model School & College</span><br>
                 <span style="font-size: 0.75rem; color: var(--ios-gold);">SSC Passed (2025)</span>
             </div>
-        </div>
-
-        <div class="section-header">Skills</div>
-        <div class="glass-card">
-            <span class="skill-pill">Software Troubleshooting</span>
-            <span class="skill-pill">Computer Clerk</span>
-            <span class="skill-pill">Python Beginner</span>
-            <span class="skill-pill">Slack & GitHub APIs</span>
-            <span class="skill-pill">Hardware Optimization</span>
         </div>
 
         <div class="section-header">Connect</div>
@@ -189,8 +170,8 @@
             <a href="https://tiktok.com/@ahmed_ullah.78" class="link-item">
                 <span>TikTok</span><i class="fab fa-tiktok"></i>
             </a>
-            <a href="https://wa.me/8801806639158" class="link-item wa-link">
-                <span>WhatsApp</span><i class="fab fa-whatsapp"></i>
+            <a href="https://wa.me/8801806639158" class="link-item">
+                <span style="color: #34C759;">WhatsApp</span><i class="fab fa-whatsapp" style="color: #34C759;"></i>
             </a>
         </div>
     </div>
