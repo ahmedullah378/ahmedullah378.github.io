@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
+            /* iOS 26 Palette: Refracted Gold & Deep Liquid Tones */
             --ios-gold: #D4AF37;
             --ios-gold-bright: #F5E6CC;
             --glass-bg: rgba(255, 255, 255, 0.03);
@@ -18,11 +19,21 @@
                        radial-gradient(at 50% 100%, #04070a 0%, transparent 50%);
         }
 
+        /* Light Mode Adjustment */
+        @media (prefers-color-scheme: light) {
+            :root {
+                --glass-bg: rgba(255, 255, 255, 0.6);
+                --glass-border: rgba(0, 0, 0, 0.05);
+                --ios-gold: #A67C00;
+                --ios-gold-bright: #634E1D;
+            }
+        }
+
         body {
             background-color: #04070a;
             background-image: var(--bg-mesh);
             color: #fff;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
             margin: 0;
             display: flex;
             justify-content: center;
@@ -42,9 +53,11 @@
             to { opacity: 1; filter: blur(0); transform: scale(1) translateY(0); }
         }
 
+        /* Super-ellipse Glass Profile */
         .profile-container {
             width: 130px; height: 130px;
             margin: 0 auto 25px;
+            position: relative;
             background: var(--glass-bg);
             backdrop-filter: blur(20px) saturate(180%);
             border-radius: 40px; /* iOS Squircle */
@@ -59,21 +72,24 @@
             border-radius: 35px;
         }
 
-        h1 { font-size: 1.8rem; font-weight: 700; margin: 0; text-align: center; }
+        h1 { font-size: 1.8rem; font-weight: 700; margin: 0; text-align: center; letter-spacing: -0.5px; }
         .operator-tag { 
             display: block; text-align: center; color: var(--ios-gold); 
             font-size: 0.75rem; font-weight: 600; letter-spacing: 4px; 
             margin: 8px 0 35px; text-transform: uppercase;
         }
 
+        /* Frosted Glass Sectioning */
         .glass-card {
             background: var(--glass-bg);
             backdrop-filter: blur(25px) saturate(200%);
+            -webkit-backdrop-filter: blur(25px) saturate(200%);
             border: 1px solid var(--glass-border);
             border-radius: 28px;
             padding: 24px;
             margin-bottom: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2), var(--inner-glow);
+            transition: transform 0.3s ease;
         }
 
         .section-header {
@@ -82,48 +98,21 @@
             text-transform: uppercase; margin-bottom: 15px; opacity: 0.9;
         }
 
-        p { font-size: 0.88rem; line-height: 1.5; color: rgba(255,255,255,0.8); }
+        p { font-size: 0.88rem; line-height: 1.5; color: rgba(255,255,255,0.8); margin: 0; }
+        
+        .edu-title { font-weight: 600; color: #fff; display: block; margin-top: 10px; }
+        .edu-sub { font-size: 0.75rem; color: var(--ios-gold); font-weight: 500; }
 
-        /* Gaming Section Styling */
-        .game-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 5px;
-        }
-
-        .game-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: rgba(255,255,255,0.02);
-            padding: 10px;
-            border-radius: 18px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .game-thumb {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            object-fit: cover;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-
-        .game-name {
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: rgba(255,255,255,0.9);
-        }
-
+        /* Liquid Skills Grid */
+        .skills-pill-box { display: flex; flex-wrap: wrap; gap: 8px; }
         .skill-pill {
             background: rgba(212, 175, 55, 0.08);
             border: 1px solid rgba(212, 175, 55, 0.15);
             padding: 6px 14px; border-radius: 12px;
             font-size: 0.72rem; color: var(--ios-gold-bright); font-weight: 500;
-            margin: 4px; display: inline-block;
         }
 
+        /* iOS-style Button Stack */
         .link-item {
             display: flex; align-items: center; justify-content: space-between;
             padding: 18px 24px; margin-bottom: 12px;
@@ -132,11 +121,14 @@
             border: 1px solid var(--glass-border);
             border-radius: 22px;
             text-decoration: none; color: #fff;
-            transition: 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .link-item:hover { background: rgba(255,255,255,0.08); transform: translateY(-2px); }
-        .wa-link { color: #34C759; }
+        .link-item:active { transform: scale(0.96); background: rgba(255,255,255,0.08); }
+        .link-item i { font-size: 1.2rem; opacity: 0.9; }
+        .tiktok-link { border-color: rgba(254, 44, 85, 0.2); }
+        .wa-link { color: #34C759; } /* iOS Green */
+
     </style>
 </head>
 <body>
@@ -151,57 +143,38 @@
 
         <div class="section-header">About</div>
         <div class="glass-card">
-            <p>Technical specialist and hardware enthusiast based in Dhaka. Specialized in software troubleshooting, workflow automation, and high-performance digital environments.</p>
-        </div>
-
-        <div class="section-header">Gaming Hobbies</div>
-        <div class="glass-card">
-            <div class="game-list">
-                <div class="game-item">
-                    <img src="https://m.media-amazon.com/images/I/41-q0N8u5aL.png" alt="PUBG" class="game-thumb">
-                    <span class="game-name">PUBG Mobile</span>
-                </div>
-                <div class="game-item">
-                    <img src="https://styles.redditmedia.com/t5_3oeyf/styles/communityIcon_v685t6x595p11.png" alt="Fortnite" class="game-thumb">
-                    <span class="game-name">Fortnite Mobile</span>
-                </div>
-                <div class="game-item">
-                    <img src="https://play-lh.googleusercontent.com/I6P0t8wI7Z7F9L9yUo_vY1y8E-Yp_Z0B0Y6_Z0Y0Y0Y0Y0Y0Y0Y0Y0Y0Y0Y0Y0Y0Y0" alt="Blood Strike" class="game-thumb">
-                    <span class="game-name">Blood Strike</span>
-                </div>
-            </div>
+            <p>Technical specialist and hardware enthusiast based in Dhaka. Focused on software troubleshooting, workflow automation, and high-speed digital environments.</p>
         </div>
 
         <div class="section-header">Education</div>
         <div class="glass-card">
-            <div style="margin-bottom: 15px;">
-                <span style="font-weight: 600;">Diploma in Computer Science & Engineering</span><br>
-                <span style="font-size: 0.75rem; color: var(--ios-gold);">Currently Pursuing</span>
-            </div>
-            <div>
-                <span style="font-weight: 600;">Motijheel Model School & College</span><br>
-                <span style="font-size: 0.75rem; color: var(--ios-gold);">SSC Passed (2025)</span>
-            </div>
+            <span class="edu-title">Diploma in Computer Science & Engineering</span>
+            <span class="edu-sub">Currently Pursuing</span>
+            
+            <span class="edu-title">Motijheel Model School & College</span>
+            <span class="edu-sub">SSC Passed (2025)</span>
         </div>
 
         <div class="section-header">Skills</div>
         <div class="glass-card">
-            <span class="skill-pill">Software Troubleshooting</span>
-            <span class="skill-pill">Computer Clerk</span>
-            <span class="skill-pill">Python Beginner</span>
-            <span class="skill-pill">Slack & GitHub APIs</span>
-            <span class="skill-pill">Hardware Optimization</span>
+            <div class="skills-pill-box">
+                <span class="skill-pill">Software Troubleshooting</span>
+                <span class="skill-pill">Computer Clerk</span>
+                <span class="skill-pill">Python Beginner</span>
+                <span class="skill-pill">Slack & GitHub APIs</span>
+                <span class="skill-pill">Hardware Optimization</span>
+            </div>
         </div>
 
         <div class="section-header">Connect</div>
         <div class="stack">
             <a href="https://facebook.com/Ahmedullah3778" class="link-item">
-                <span>Facebook</span><i class="fab fa-facebook-f"></i>
+                <span>Facebook</span><i class="fab fa-facebook">i>
             </a>
             <a href="https://instagram.com/highlypraised_78" class="link-item">
                 <span>Instagram</span><i class="fab fa-instagram"></i>
             </a>
-            <a href="https://tiktok.com/@ahmed_ullah.78" class="link-item">
+            <a href="https://tiktok.com/@ahmed_ullah.78" class="link-item tiktok-link">
                 <span>TikTok</span><i class="fab fa-tiktok"></i>
             </a>
             <a href="https://wa.me/8801806639158" class="link-item wa-link">
