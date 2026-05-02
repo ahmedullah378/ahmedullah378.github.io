@@ -9,13 +9,15 @@
     <style>
         :root {
             --gold: #C5A059;
-            --bg: #080B0E;
-            --glass: rgba(255, 255, 255, 0.03);
-            --border: rgba(197, 160, 89, 0.15);
+            --bg: #04070a; /* Darker liquid-like base */
+            --glass: rgba(255, 255, 255, 0.05);
+            --liquid-border: rgba(197, 160, 89, 0.2);
+            --glow: rgba(197, 160, 89, 0.1);
         }
 
         body {
             background-color: var(--bg);
+            background-image: radial-gradient(circle at 50% 50%, #0a1017 0%, #04070a 100%);
             color: white;
             font-family: 'Inter', 'Segoe UI', sans-serif;
             margin: 0;
@@ -24,29 +26,39 @@
             justify-content: center;
             min-height: 100vh;
             padding: 40px 0;
+            overflow-x: hidden;
         }
 
+        /* The Liquid Reveal Container */
         .container {
             width: 90%;
-            max-width: 340px;
+            max-width: 350px;
             text-align: center;
-            animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+            opacity: 0;
+            filter: blur(10px); /* Liquid start */
+            transform: scale(0.95) translateY(20px);
+            animation: liquidReveal 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes liquidReveal {
+            to { 
+                opacity: 1; 
+                filter: blur(0);
+                transform: scale(1) translateY(0);
+            }
         }
 
-        /* Image Optimization Styles */
+        /* Frosted Glass Wrapper for Image */
         .img-wrapper {
-            width: 115px;
-            height: 115px;
+            width: 120px;
+            height: 120px;
             margin: 0 auto 25px;
             border-radius: 50%;
-            border: 1px solid var(--gold);
+            background: var(--glass);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--liquid-border);
             padding: 4px;
-            background: #111;
+            box-shadow: 0 0 30px var(--glow);
             overflow: hidden;
             display: flex;
             align-items: center;
@@ -58,104 +70,124 @@
             height: 100%;
             object-fit: cover;
             border-radius: 50%;
-            /* Speed Hack: Smooth fade-in once loaded */
-            transition: opacity 0.5s ease-in-out;
+            opacity: 0.9;
         }
 
         h1 {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-weight: 500;
             margin: 0;
             letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(255,255,255,0.1);
         }
 
         .sub {
             color: var(--gold);
-            font-size: 0.65rem;
-            letter-spacing: 5px;
+            font-size: 0.7rem;
+            letter-spacing: 6px;
             text-transform: uppercase;
-            margin: 10px 0 35px;
+            margin: 12px 0 35px;
             display: block;
-            opacity: 0.7;
+            opacity: 0.8;
+            font-weight: 400;
         }
 
+        /* Glass Project Card */
         .section-label {
             font-size: 0.6rem;
             text-transform: uppercase;
-            letter-spacing: 3px;
+            letter-spacing: 4px;
             color: var(--gold);
             margin-bottom: 12px;
             opacity: 0.5;
         }
 
         .project-card {
-            background: rgba(255,255,255,0.02);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 18px;
-            margin-bottom: 30px;
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--liquid-border);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 35px;
             text-align: left;
+            box-shadow: inset 0 0 15px rgba(255,255,255,0.02);
+            transition: all 0.5s ease;
+        }
+
+        .project-card:hover {
+            border-color: var(--gold);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3), 0 0 15px var(--glow);
         }
 
         .project-card h3 {
             font-size: 0.85rem;
-            margin: 0 0 6px;
+            margin: 0 0 8px;
             color: var(--gold);
+            letter-spacing: 1px;
         }
 
         .project-card p {
-            font-size: 0.72rem;
-            line-height: 1.4;
+            font-size: 0.75rem;
+            line-height: 1.6;
             margin: 0;
             color: rgba(255,255,255,0.6);
         }
 
+        /* Frosted Glass Buttons */
         .links {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 14px;
         }
 
         .btn {
             text-decoration: none;
-            color: rgba(255,255,255,0.8);
-            font-size: 0.85rem;
-            padding: 16px;
-            border-radius: 14px;
+            color: rgba(255,255,255,0.9);
+            font-size: 0.9rem;
+            padding: 16px 22px;
+            border-radius: 18px;
             background: var(--glass);
-            border: 1px solid rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.08);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: 0.3s;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .btn:hover {
+            background: rgba(197, 160, 89, 0.1);
             border-color: var(--gold);
-            background: rgba(197, 160, 89, 0.05);
-            transform: translateY(-2px);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
         }
 
         .whatsapp {
             border-color: rgba(37, 211, 102, 0.2);
             color: #25D366;
         }
+
+        .whatsapp:hover {
+            background: rgba(37, 211, 102, 0.1);
+            border-color: #25D366;
+        }
+
     </style>
 </head>
 <body>
 
     <div class="container">
         <div class="img-wrapper">
-            <img src="profile.jpg" alt="Ahmed Ullah" loading="eager">
+            <img src="profile.jpg" alt="Ahmed Ullah">
         </div>
         
         <h1>Ahmed Ullah</h1>
         <span class="sub">THE OPERATOR</span>
 
-        <div class="section-label">Project</div>
+        <div class="section-label">Featured Project</div>
         <div class="project-card">
             <h3>Hub-and-Spoke Automation</h3>
-            <p>Python-powered pipeline connecting Slack and GitHub for automated document processing and repository syncing.</p>
+            <p>A sophisticated Python pipeline bridging Slack and GitHub to automate document synchronization and image processing.</p>
         </div>
 
         <div class="section-label">Connect</div>
