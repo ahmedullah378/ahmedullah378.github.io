@@ -4,171 +4,221 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ahmed Ullah | The Operator</title>
-    <link rel="preload" as="image" href="profile.jpg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Base Variables (Dark Mode by Default) */
         :root {
-            --gold: #C5A059;
-            --bg: #04070a;
-            --glass: rgba(255, 255, 255, 0.05);
-            --liquid-border: rgba(197, 160, 89, 0.2);
-            --text-main: #FFFFFF;
-            --text-dim: rgba(255, 255, 255, 0.7);
-            --shadow: rgba(0, 0, 0, 0.5);
-            --glow: rgba(197, 160, 89, 0.1);
-        }
-
-        /* Light Mode Variables - Triggered by Device Settings */
-        @media (prefers-color-scheme: light) {
-            :root {
-                --bg: #F5F7FA;
-                --glass: rgba(255, 255, 255, 0.7);
-                --liquid-border: rgba(197, 160, 89, 0.4);
-                --text-main: #1A1A1A;
-                --text-dim: #4A4A4A;
-                --shadow: rgba(0, 0, 0, 0.1);
-                --glow: rgba(197, 160, 89, 0.05);
-            }
-            body {
-                background-image: radial-gradient(circle at 50% 50%, #FFFFFF 0%, #F0F2F5 100%);
-            }
+            /* High-Contrast Gold and White (FIX FOR UNREADABLE ACCENTS) */
+            --gold-bright: #F5E6CC; /* Polished Ivory Gold for readability */
+            --text-pearl: #F0F2F5; /* Pearl White for sharp contrast in descriptions */
+            
+            --dark-bg: #0A0F14; /* Charcoal Black */
+            --glass-panel: rgba(22, 29, 38, 0.65); /* Translucent Panel */
+            --glass-border: rgba(197, 160, 89, 0.1);
         }
 
         body {
-            background-color: var(--bg);
-            background-image: radial-gradient(circle at 50% 50%, #0a1017 0%, #04070a 100%);
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-pearl); /* Set descriptions to white by default */
+            font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             display: flex;
+            align-items: center;
             justify-content: center;
             min-height: 100vh;
-            padding: 50px 0;
-            transition: background 0.5s ease, color 0.5s ease;
+            padding: 30px 15px;
         }
 
-        .container {
-            width: 90%;
-            max-width: 360px;
-            text-align: center;
-            animation: liquidReveal 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        @keyframes liquidReveal {
-            from { opacity: 0; filter: blur(10px); transform: scale(0.95); }
-            to { opacity: 1; filter: blur(0); transform: scale(1); }
-        }
-
-        .img-wrapper {
-            width: 120px; height: 120px;
-            margin: 0 auto 20px;
-            border-radius: 50%;
-            background: var(--glass);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--liquid-border);
-            padding: 4px;
-            box-shadow: 0 0 30px var(--glow);
-            overflow: hidden;
-        }
-
-        .img-wrapper img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-
-        h1 { font-size: 1.6rem; margin: 0; letter-spacing: 2px; }
-
-        .sub {
-            color: var(--gold); font-size: 0.7rem; letter-spacing: 5px;
-            text-transform: uppercase; margin: 10px 0 30px; display: block;
-        }
-
-        .glass-box {
-            background: var(--glass);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--liquid-border);
+        /* The main reveal-panel */
+        .reveal-container {
+            width: 100%;
+            max-width: 380px;
+            background: var(--glass-panel);
+            backdrop-filter: blur(15px); /* "Glass" effect */
+            border: 1px solid var(--glass-border);
             border-radius: 20px;
-            padding: 20px;
+            padding: 40px 25px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: panelReveal 1s ease forwards;
+        }
+
+        @keyframes panelReveal {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Profile Photo (uses circle from image_9.png) */
+        .profile-photo {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--gold-bright);
             margin-bottom: 25px;
-            text-align: left;
-            box-shadow: 0 4px 15px var(--shadow);
-            transition: background 0.4s ease;
+            box-shadow: 0 0 20px rgba(197, 160, 89, 0.3);
         }
 
+        h1 {
+            font-size: 1.8rem;
+            margin: 0;
+            letter-spacing: 1px;
+            color: #FFFFFF; /* Name is always pure white */
+        }
+
+        /* The FIX: Brighter Gold Labels and White Descriptions */
         .section-label {
-            font-size: 0.6rem; text-transform: uppercase; letter-spacing: 3px;
-            color: var(--gold); margin-bottom: 10px; opacity: 0.8; text-align: left;
+            color: var(--gold-bright); /* High-contrast bright gold */
+            font-size: 0.8rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin: 15px 0 10px 0;
+            display: block;
+            opacity: 1; /* Ensure full opacity */
         }
 
-        p { font-size: 0.82rem; line-height: 1.6; color: var(--text-dim); margin: 0; }
+        .description-box {
+            color: var(--text-pearl); /* High-contrast white description */
+            font-size: 0.85rem;
+            line-height: 1.6;
+            margin: 0 0 25px 0;
+            opacity: 1; /* Ensure full opacity */
+        }
 
-        .skills-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        /* Skills Tags (updated with brighter gold accents) */
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
 
         .skill-tag {
-            background: rgba(197, 160, 89, 0.1);
-            border: 1px solid var(--liquid-border);
-            color: var(--gold);
-            padding: 4px 10px; border-radius: 8px; font-size: 0.7rem;
+            background: rgba(197, 160, 89, 0.15);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 0.75rem;
+            color: var(--gold-bright); /* Use bright gold for tags */
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .links-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 25px;
+            text-decoration: none;
+            color: var(--text-pearl); /* Links are white text by default */
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            transition: all 0.4s ease;
+        }
+
+        .social-link:hover {
+            border-color: var(--gold-bright);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(197, 160, 89, 0.1);
+        }
+
+        .social-link i {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .social-link:hover i {
+            opacity: 1;
+        }
+
+        .link-label {
             font-weight: 500;
+            letter-spacing: 0.5px;
         }
 
-        .edu-item h4 { font-size: 0.85rem; margin: 0; color: var(--text-main); }
-        .edu-item span { font-size: 0.7rem; color: var(--gold); font-weight: 600; }
+        /* High-Contrast Education labels */
+        .edu-item h4 { font-size: 0.9rem; margin: 0 0 5px 0; color: #FFFFFF; }
+        .edu-item span { font-size: 0.75rem; color: var(--gold-bright); font-weight: 600; }
 
-        .links { display: flex; flex-direction: column; gap: 12px; }
-
-        .btn {
-            text-decoration: none; color: var(--text-main); font-size: 0.9rem;
-            padding: 15px 20px; border-radius: 15px; background: var(--glass);
-            border: 1px solid var(--liquid-border);
-            display: flex; justify-content: space-between; align-items: center;
-            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        /* TikTok specific styling (using standard branding colors) */
+        .tiktok {
+            border-color: rgba(255, 0, 80, 0.2);
+            color: rgba(255, 255, 255, 0.9); /* Pure white text is safest */
+        }
+        .tiktok:hover {
+            border-color: #FE2C55;
+            color: #FFFFFF;
+            background: rgba(254, 44, 85, 0.1);
         }
 
-        .btn:hover { border-color: var(--gold); transform: translateY(-3px); box-shadow: 0 5px 15px var(--glow); }
-        .whatsapp { color: #25D366; }
+        /* Standard WhatsApp accent */
+        .whatsapp {
+            border-color: rgba(37, 211, 102, 0.2);
+            color: #25D366;
+        }
+        .whatsapp:hover {
+            border-color: #25D366;
+            color: #FFFFFF;
+            background: #25D366;
+        }
+
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="img-wrapper"><img src="profile.jpg" alt="Ahmed Ullah"></div>
+    <div class="reveal-container">
+        <img src="profile.jpg" alt="Ahmed Ullah" class="profile-photo">
+        
         <h1>Ahmed Ullah</h1>
-        <span class="sub">THE OPERATOR</span>
+        <span class="sub section-label">THE OPERATOR</span>
 
-        <div class="section-label">About Me</div>
-        <div class="glass-box">
-            <p>A technical specialist based in Dhaka, focused on building efficient automation tools. I bridge hardware performance with workflow software to create high-speed, professional digital environments.</p>
+        <span class="section-label">ABOUT ME</span>
+        <p class="description-box">A technical specialist based in Dhaka, focused on building efficient automation tools. I bridge hardware performance with workflow software to create high-speed, professional digital environments.</p>
+
+        <span class="section-label">EDUCATION</span>
+        <div class="description-box edu-item">
+            <h4>Motijheel Model School & College</h4>
+            <span>SSC Passed (2025)</span>
+            <p style="margin-top: 5px; font-size: 0.75rem; color: var(--text-pearl);">Currently pursuing Higher Secondary studies.</p>
         </div>
 
-        <div class="section-label">Education</div>
-        <div class="glass-box">
-            <div class="edu-item">
-                <h4>Motijheel Model School & College</h4>
-                <span>SSC Passed (2025)</span>
-                <p style="margin-top: 5px; font-size: 0.75rem;">Currently pursuing Higher Secondary studies.</p>
-            </div>
+        <span class="section-label">CORE SKILLS</span>
+        <div class="skills-container">
+            <span class="skill-tag">Python Automation</span>
+            <span class="skill-tag">Slack & GitHub APIs</span>
+            <span class="skill-tag">Hardware Optimization</span>
+            <span class="skill-tag">Digital Content Strategy</span>
+            <span class="skill-tag">MagicOS Development</span>
         </div>
 
-        <div class="section-label">Core Skills</div>
-        <div class="glass-box">
-            <div class="skills-grid">
-                <div class="skill-tag">Python Automation</div>
-                <div class="skill-tag">Slack & GitHub APIs</div>
-                <div class="skill-tag">Hardware Optimization</div>
-                <div class="skill-tag">Digital Content Strategy</div>
-                <div class="skill-tag">MagicOS Development</div>
-            </div>
-        </div>
-
-        <div class="section-label">Connect</div>
-        <div class="links">
-            <a href="https://facebook.com/Ahmedullah3778" target="_blank" class="btn">
-                <span>Facebook</span><i class="fab fa-facebook-f"></i>
+        <span class="section-label">CONNECT</span>
+        <div class="links-container">
+            <a href="https://facebook.com/Ahmedullah3778" target="_blank" class="social-link">
+                <i class="fab fa-facebook-f"></i>
+                <span class="link-label">Facebook</span>
             </a>
-            <a href="https://instagram.com/highlypraised_78" target="_blank" class="btn">
-                <span>Instagram</span><i class="fab fa-instagram"></i>
+            <a href="https://instagram.com/highlypraised_78" target="_blank" class="social-link">
+                <i class="fab fa-instagram"></i>
+                <span class="link-label">Instagram</span>
             </a>
-            <a href="https://wa.me/8801806639158" target="_blank" class="btn whatsapp">
-                <span>WhatsApp</span><i class="fab fa-whatsapp"></i>
+            
+            <a href="https://tiktok.com/@ahmed_ullah.78" target="_blank" class="social-link tiktok">
+                <i class="fab fa-tiktok"></i>
+                <span class="link-label">TikTok</span>
+            </a>
+            
+            <a href="https://wa.me/8801806639158" target="_blank" class="social-link whatsapp">
+                <i class="fab fa-whatsapp"></i>
+                <span class="link-label">WhatsApp</span>
             </a>
         </div>
     </div>
