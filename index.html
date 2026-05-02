@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ahmed Ullah | The Operator</title>
+    <link rel="preload" as="image" href="profile.jpg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -29,21 +30,22 @@
             width: 90%;
             max-width: 340px;
             text-align: center;
-            animation: slideUp 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+            animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(40px); }
+            from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Image Optimization Styles */
         .img-wrapper {
-            width: 110px;
-            height: 110px;
-            margin: 0 auto 20px;
+            width: 115px;
+            height: 115px;
+            margin: 0 auto 25px;
             border-radius: 50%;
             border: 1px solid var(--gold);
-            padding: 5px;
+            padding: 4px;
             background: #111;
             overflow: hidden;
             display: flex;
@@ -56,6 +58,8 @@
             height: 100%;
             object-fit: cover;
             border-radius: 50%;
+            /* Speed Hack: Smooth fade-in once loaded */
+            transition: opacity 0.5s ease-in-out;
         }
 
         h1 {
@@ -70,47 +74,40 @@
             font-size: 0.65rem;
             letter-spacing: 5px;
             text-transform: uppercase;
-            margin: 10px 0 30px;
+            margin: 10px 0 35px;
             display: block;
             opacity: 0.7;
         }
 
-        /* Project Section Styling */
         .section-label {
             font-size: 0.6rem;
             text-transform: uppercase;
             letter-spacing: 3px;
             color: var(--gold);
             margin-bottom: 12px;
-            opacity: 0.6;
+            opacity: 0.5;
         }
 
         .project-card {
-            background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
+            background: rgba(255,255,255,0.02);
             border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 20px;
+            padding: 18px;
             margin-bottom: 30px;
             text-align: left;
-            transition: 0.3s;
-        }
-
-        .project-card:hover {
-            border-color: var(--gold);
-            background: rgba(197, 160, 89, 0.03);
         }
 
         .project-card h3 {
-            font-size: 0.9rem;
-            margin: 0 0 8px;
+            font-size: 0.85rem;
+            margin: 0 0 6px;
             color: var(--gold);
         }
 
         .project-card p {
-            font-size: 0.75rem;
-            line-height: 1.5;
+            font-size: 0.72rem;
+            line-height: 1.4;
             margin: 0;
-            color: rgba(255,255,255,0.7);
+            color: rgba(255,255,255,0.6);
         }
 
         .links {
@@ -124,7 +121,7 @@
             color: rgba(255,255,255,0.8);
             font-size: 0.85rem;
             padding: 16px;
-            border-radius: 12px;
+            border-radius: 14px;
             background: var(--glass);
             border: 1px solid rgba(255,255,255,0.05);
             display: flex;
@@ -135,8 +132,8 @@
 
         .btn:hover {
             border-color: var(--gold);
-            color: white;
-            transform: scale(1.02);
+            background: rgba(197, 160, 89, 0.05);
+            transform: translateY(-2px);
         }
 
         .whatsapp {
@@ -149,16 +146,16 @@
 
     <div class="container">
         <div class="img-wrapper">
-            <img src="profile.jpg" alt="Ahmed Ullah">
+            <img src="profile.jpg" alt="Ahmed Ullah" loading="eager">
         </div>
         
         <h1>Ahmed Ullah</h1>
         <span class="sub">THE OPERATOR</span>
 
-        <div class="section-label">Latest Work</div>
+        <div class="section-label">Project</div>
         <div class="project-card">
             <h3>Hub-and-Spoke Automation</h3>
-            <p>A Python-based workflow connecting Slack and GitHub. Automatically processes document images, cleans them, and syncs results to repositories.</p>
+            <p>Python-powered pipeline connecting Slack and GitHub for automated document processing and repository syncing.</p>
         </div>
 
         <div class="section-label">Connect</div>
